@@ -66,4 +66,10 @@ spring:
       jdbc:
         time_zone: UTC
     show-sql: true
+  batch:
+    job:
+      enabled: false
+    initialize-schema: always
+
+inputFile: classpath:/customer.csv
 
