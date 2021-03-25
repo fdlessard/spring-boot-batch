@@ -1,5 +1,7 @@
-package io.fdlessard.codebites.batch;
+package io.fdlessard.codebites.batch.jobs;
 
+import io.fdlessard.codebites.batch.customer.Customer;
+import io.fdlessard.codebites.batch.modified.ModifiedCustomer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 

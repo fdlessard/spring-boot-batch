@@ -1,4 +1,4 @@
-package io.fdlessard.codebites.batch;
+package io.fdlessard.codebites.batch.jobs;
 
 import java.util.HashMap;
 import java.util.Map;

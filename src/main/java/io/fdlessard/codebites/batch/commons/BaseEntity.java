@@ -1,4 +1,4 @@
-package io.fdlessard.codebites.batch;
+package io.fdlessard.codebites.batch.commons;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Column;

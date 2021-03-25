@@ -6,6 +6,7 @@ databaseChangeLog:
 
         - loadData:
             tableName: customer
+            schemaName: cust1
             file: "db/data/customer.csv"
             encoding: UTF-8
             separator: ','

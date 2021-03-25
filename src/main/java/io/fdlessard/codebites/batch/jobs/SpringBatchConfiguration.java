@@ -1,6 +1,8 @@
-package io.fdlessard.codebites.batch;
+package io.fdlessard.codebites.batch.jobs;
 
 
+import io.fdlessard.codebites.batch.customer.Customer;
+import io.fdlessard.codebites.batch.modified.ModifiedCustomer;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -53,7 +55,6 @@ public class SpringBatchConfiguration {
     return jobBuilderFactory.get("customer-data-loader-job")
         .start(step1)
         .build();
-
   }
 
   @Bean

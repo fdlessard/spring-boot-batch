@@ -21,7 +21,7 @@ management:
       enbled: true
 
 logging:
-  level.root: INFO
+  level.root: debug
   #  level.org.hibernate.SQL: DEBUG
   level.liquibase: INFO
   level.io.fdlessard.codebites.batch: DEBUG
@@ -41,23 +41,21 @@ spring:
     time-zone: UTC
     serialization:
       write_dates_as_timestamps: false
-  datasource:
-    username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:secret}
-    platform: postgres
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
-    initialization-mode: always
-    separator: ";;"
-  liquibase:
-    enabled: on
-    drop-first: on
-    default-schema: public
-    change-log: classpath:/db/changelog/db.changelog-master.yaml
+#  datasource:
+#    username: ${POSTGRES_USER:postgres}
+#    password: ${POSTGRES_PASSWORD:secret}
+#    platform: postgres
+#    driverClassName: org.postgresql.Driver
+#    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
+#    initialization-mode: always
+#    separator: ";;"
+#    schema: classpath:/db/scripts/create-postgres-schema.sql
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
     hibernate:
-      ddl-auto: none
+      hbm2ddl:
+        auto: update
+      ddl-auto: create
       use-new-id-generator-mappings: false
     properties:
       hibernate:
@@ -66,10 +64,48 @@ spring:
       jdbc:
         time_zone: UTC
     show-sql: true
+#  liquibase:
+#    enabled: on
+#    drop-first: on
+#    default-schema: public
+#    change-log: classpath:/db/changelog/db.changelog-master.yaml
   batch:
     job:
       enabled: false
-    initialize-schema: always
+      initialize-schema: always
+
+
+cust1:
+  datasource:
+    jdbc-url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
+    platform: postgres
+    driverClassName: org.postgresql.Driver
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:secret}
+    initialization-mode: always
+#    separator: ";;"
+#    schema: classpath:/db/scripts/create-postgres-schema.sql
+
+cust2:
+  datasource:
+    jdbc-url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
+    platform: postgres
+    driverClassName: org.postgresql.Driver
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:secret}
+
+batch:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
+    jdbcUrl: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
+    platform: postgres
+    driverClassName: org.postgresql.Driver
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:secret}
+
 
 inputFile: classpath:/customer.csv
+
+
+
 

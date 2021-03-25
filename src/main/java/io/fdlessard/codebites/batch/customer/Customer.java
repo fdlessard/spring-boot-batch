@@ -1,15 +1,17 @@
-package io.fdlessard.codebites.batch;
+package io.fdlessard.codebites.batch.customer;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import io.fdlessard.codebites.batch.commons.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Table(name = "customer", schema = "public")
+@Table(name = "customer", schema = "cust1")
 @Entity
 @SuperBuilder
 @Data
