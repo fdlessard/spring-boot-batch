@@ -1,59 +1,68 @@
-package io.fdlessard.codebites.batch;
+package io.fdlessard.codebites.batch.configurations;
 
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.util.Properties;
+import javax.persistence.EntityManagerFactory;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.persistence.EntityManagerFactory;
-import java.util.Properties;
-
 @Configuration
-@ConfigurationProperties("cust2.datasource")
+@ConfigurationProperties("batch.datasource")
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef = "modifiedCustomerEntityManagerFactory",
-        transactionManagerRef = "modifiedCustomerTransactionManager",
-        basePackages = {"io.fdlessard.codebites.batch.modified"}
+        entityManagerFactoryRef = "batchEntityManagerFactory",
+        transactionManagerRef = "batchTransactionManager",
+        basePackages = {"io.fdlessard.codebites.batch.jobs"}
 )
-public class ModifiedCustomerDatasourceConfiguration extends HikariConfig {
+public class BatchDatasourceConfiguration extends HikariConfig {
 
     protected final static Properties JPA_PROPERTIES = new Properties() {{
         put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL10Dialect");
+        put("hibernate.hbm2dll.create_namespaces",  "true");
         put("hibernate.hbm2ddl.auto", "update");
         put("hibernate.ddl-auto", "create");
         put("show-sql", "true");
+       // put("javax.persistence.create-database-schemas", "true");
     }};
 
-    public final static String PERSISTENCE_UNIT_NAME = "cust2";
+    public final static String PERSISTENCE_UNIT_NAME = "cust1";
 
+    @Primary
     @Bean
-    public HikariDataSource modifiedCustomerDataSource() {
+    public HikariDataSource batchDataSource() {
         return new HikariDataSource(this);
     }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean modifiedCustomerEntityManagerFactory(final HikariDataSource modifiedCustomerDataSource) {
+    @Primary
+    @Bean(name = "batchEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean batchEntityManagerFactory(final HikariDataSource batchDataSource) {
 
         return new LocalContainerEntityManagerFactoryBean() {{
-            setDataSource(modifiedCustomerDataSource);
+            setDataSource(batchDataSource);
             setPersistenceProviderClass(HibernatePersistenceProvider.class);
             setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
-            setPackagesToScan("io.fdlessard.codebites.batch.modified");
+            setPackagesToScan("io.fdlessard.codebites.batch.jobs");
             setJpaProperties(JPA_PROPERTIES);
+
         }};
     }
 
-    @Bean
-    public PlatformTransactionManager modifiedCustomerTransactionManager(EntityManagerFactory modifiedCustomerEntityManagerFactory) {
-        return new JpaTransactionManager(modifiedCustomerEntityManagerFactory);
+    @Primary
+    @Bean(name = "batchTransactionManager")
+    public PlatformTransactionManager batchTransactionManager(
+        @Qualifier("batchEntityManagerFactory") EntityManagerFactory batchEntityManagerFactory
+    ) {
+        return new JpaTransactionManager(batchEntityManagerFactory);
     }
 }

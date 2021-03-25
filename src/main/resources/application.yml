@@ -8,17 +8,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: beans, health, loggers
-    health:
-      enabled: true
-    loggers:
-      enabled: true
-    beans:
-      enabled: true
-    liquibase:
-      enabled: true
-    git:
-      enbled: true
+        include: health, info, git, loggers, beans
 
 logging:
   level.root: debug
@@ -41,6 +31,12 @@ spring:
     time-zone: UTC
     serialization:
       write_dates_as_timestamps: false
+  batch:
+    job:
+      enabled: false
+    initialize-schema: always
+
+
 #  datasource:
 #    username: ${POSTGRES_USER:postgres}
 #    password: ${POSTGRES_PASSWORD:secret}
@@ -50,55 +46,47 @@ spring:
 #    initialization-mode: always
 #    separator: ";;"
 #    schema: classpath:/db/scripts/create-postgres-schema.sql
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-    hibernate:
-      hbm2ddl:
-        auto: update
-      ddl-auto: create
-      use-new-id-generator-mappings: false
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-      jdbc:
-        time_zone: UTC
-    show-sql: true
+#  jpa:
+#    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+#    hibernate:
+#      ddl-auto: create
+#      use-new-id-generator-mappings: false
+#    properties:
+#      hibernate:
+#        show_sql: true
+#        format_sql: true
+#        hbm2ddl:
+#          create_namespaces: true
+#          auto: update
+#      jdbc:
+#        time_zone: UTC
+#    show-sql: true
 #  liquibase:
 #    enabled: on
 #    drop-first: on
 #    default-schema: public
 #    change-log: classpath:/db/changelog/db.changelog-master.yaml
-  batch:
-    job:
-      enabled: false
-      initialize-schema: always
+
 
 
 cust1:
   datasource:
     jdbc-url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
-    platform: postgres
     driverClassName: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:secret}
-    initialization-mode: always
-#    separator: ";;"
-#    schema: classpath:/db/scripts/create-postgres-schema.sql
+
 
 cust2:
   datasource:
     jdbc-url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
-    platform: postgres
     driverClassName: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:secret}
 
 batch:
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
     jdbcUrl: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
-    platform: postgres
     driverClassName: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:secret}

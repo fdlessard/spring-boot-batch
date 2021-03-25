@@ -1,4 +1,4 @@
-package io.fdlessard.codebites.batch.jobs;
+package io.fdlessard.codebites.batch.configurations;
 
 
 import io.fdlessard.codebites.batch.customer.Customer;
