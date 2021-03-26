@@ -2,15 +2,19 @@ package io.fdlessard.codebites.batch.configurations;
 
 
 import io.fdlessard.codebites.batch.customer.Customer;
+import io.fdlessard.codebites.batch.jobs.CustomerRowMapper;
 import io.fdlessard.codebites.batch.modified.ModifiedCustomer;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
+import org.springframework.batch.item.database.JpaItemWriter;
+import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
@@ -21,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @EnableBatchProcessing
@@ -33,19 +38,19 @@ public class SpringBatchConfiguration {
   private StepBuilderFactory stepBuilderFactory;
 
   @Autowired
-  private ItemReader<Customer> customerItemReader;
-
-  @Autowired
-  private ItemWriter<ModifiedCustomer> modifiedCustomerItemWriter;
-
-  @Autowired
   private ItemProcessor<Customer, ModifiedCustomer> customerItemProcessor;
 
+  @Autowired
+  private PlatformTransactionManager modifiedCustomerTransactionManager;
 
   @Bean
-  public Job customerJob() {
+  public Job customerJob(
+      JdbcCursorItemReader<Customer> customerItemReader,
+      JpaItemWriter<ModifiedCustomer> modifiedCustomerItemWriter
+  ) {
 
     Step step1 = stepBuilderFactory.get("step-1")
+        .transactionManager(modifiedCustomerTransactionManager)
         .<Customer, ModifiedCustomer>chunk(10)
         .reader(customerItemReader)
         .processor(customerItemProcessor)
@@ -58,7 +63,8 @@ public class SpringBatchConfiguration {
   }
 
   @Bean
-  public FlatFileItemReader<Customer> flatFileItemReader(@Value("${inputFile}") Resource inputFile) {
+  public FlatFileItemReader<Customer> flatFileItemReader(
+      @Value("${inputFile}") Resource inputFile) {
 
     FlatFileItemReader<Customer> customerFlatFileItemReader = new FlatFileItemReader<>();
     customerFlatFileItemReader.setName("CSV-READER");
@@ -85,6 +91,28 @@ public class SpringBatchConfiguration {
     customerLineMapper.setFieldSetMapper(fieldSetMapper);
 
     return customerLineMapper;
+  }
+
+  @Bean
+  public JdbcCursorItemReader<Customer> customerItemReader(DataSource customerDataSource) {
+
+    return new JdbcCursorItemReaderBuilder<Customer>()
+        .dataSource(customerDataSource)
+        .name("customerReader")
+        .sql("select * from cust1.customer")
+        .rowMapper(new CustomerRowMapper())
+        .build();
+  }
+
+  @Bean
+  public JpaItemWriter<ModifiedCustomer> modifiedCustomerItemWriter(
+      EntityManagerFactory modifiedCustomerEntityManagerFactory
+  ) {
+
+    JpaItemWriter<ModifiedCustomer> modifiedCustomerItemWriter = new JpaItemWriter<>();
+    modifiedCustomerItemWriter.setEntityManagerFactory(modifiedCustomerEntityManagerFactory);
+
+    return modifiedCustomerItemWriter;
   }
 
 }

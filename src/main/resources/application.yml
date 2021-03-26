@@ -12,8 +12,8 @@ management:
 
 logging:
   level.root: debug
-  #  level.org.hibernate.SQL: DEBUG
-  level.liquibase: INFO
+  # level.org.hibernate.SQL: DEBUG
+  # level.liquibase: INFO
   level.io.fdlessard.codebites.batch: DEBUG
 
 spring:
@@ -46,18 +46,19 @@ spring:
 #    initialization-mode: always
 #    separator: ";;"
 #    schema: classpath:/db/scripts/create-postgres-schema.sql
-#  jpa:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        show_sql: true
+        format_sql: true
+        hbm2ddl:
+          create_namespaces: true
+          auto: update
 #    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
 #    hibernate:
 #      ddl-auto: create
 #      use-new-id-generator-mappings: false
-#    properties:
-#      hibernate:
-#        show_sql: true
-#        format_sql: true
-#        hbm2ddl:
-#          create_namespaces: true
-#          auto: update
 #      jdbc:
 #        time_zone: UTC
 #    show-sql: true
@@ -67,30 +68,27 @@ spring:
 #    default-schema: public
 #    change-log: classpath:/db/changelog/db.changelog-master.yaml
 
-
-
 cust1:
   datasource:
-    jdbc-url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
+    jdbcUrl: jdbc:postgresql://localhost:5432/postgres
     driverClassName: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:secret}
 
-
 cust2:
   datasource:
-    jdbc-url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
+    jdbcUrl: jdbc:postgresql://localhost:5432/postgres
     driverClassName: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:secret}
 
 batch:
   datasource:
-    jdbcUrl: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
+    jdbcUrl: jdbc:postgresql://localhost:5432/postgres
     driverClassName: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:secret}
-    auto-commit: true
+
 
 
 inputFile: classpath:/customer.csv

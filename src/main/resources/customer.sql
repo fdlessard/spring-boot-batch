@@ -1,0 +1,2 @@
+insert into cust1.customer(firstname, lastname, company) values ('first-name-1', 'last-name-1', 'company-1');
+insert into cust1.customer(firstname, lastname, company) values ('first-name-2', 'last-name-2', 'company-2');
