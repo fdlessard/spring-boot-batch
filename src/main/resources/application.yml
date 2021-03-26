@@ -90,6 +90,7 @@ batch:
     driverClassName: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:secret}
+    auto-commit: true
 
 
 inputFile: classpath:/customer.csv

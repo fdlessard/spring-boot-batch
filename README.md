@@ -12,3 +12,6 @@ https://www.javaer101.com/en/article/13974517.html
 https://www.youtube.com/watch?v=iDogrHEo4x0
 
 https://scattercode.co.uk/2016/01/05/multiple-databases-with-spring-boot-and-spring-data-jpa/
+
+https://medium.com/swlh/working-with-spring-batch-and-distributed-transaction-772de2219e60
+https://github.com/kwonghung-YIP/spring-batch-multi-datasource
