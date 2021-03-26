@@ -1,8 +1,7 @@
-package io.fdlessard.codebites.batch.configurations;
+package io.fdlessard.codebites.batch.jobs;
 
 
 import io.fdlessard.codebites.batch.customer.Customer;
-import io.fdlessard.codebites.batch.jobs.CustomerRowMapper;
 import io.fdlessard.codebites.batch.modified.ModifiedCustomer;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -29,7 +28,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @EnableBatchProcessing
-public class SpringBatchConfiguration {
+public class JobsSetup {
 
   @Autowired
   private JobBuilderFactory jobBuilderFactory;
@@ -73,7 +72,6 @@ public class SpringBatchConfiguration {
     customerFlatFileItemReader.setLineMapper(lineMapper());
 
     return customerFlatFileItemReader;
-
   }
 
   @Bean
