@@ -33,7 +33,7 @@ spring:
       write_dates_as_timestamps: false
   h2:
     console:
-      enabled: false
+      enabled: true
   batch:
     job:
       enabled: false
@@ -55,13 +55,10 @@ cust1:
 
 cust2:
   datasource:
-    jdbcUrl: jdbc:postgresql://localhost:5432/postgres
-    driverClassName: org.postgresql.Driver
-    username: postgres
+    jdbcUrl: jdbc:mariadb://localhost:3306/db
+    driverClassName: org.mariadb.jdbc.Driver
+    username: maria
     password: secret
-
-
-
 
 
 inputFile: classpath:/customer.csv

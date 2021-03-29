@@ -47,7 +47,7 @@ public class CustomerDatasourceConfiguration {
     }};
   }
 
-  @Bean
+  @Bean(name = "customerTransactionManager")
   public PlatformTransactionManager customerTransactionManager(
       @Qualifier("customerEntityManagerFactory") EntityManagerFactory customerEntityManagerFactory
   ) {

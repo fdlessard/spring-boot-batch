@@ -43,12 +43,12 @@ public class ModifiedCustomerDatasourceConfiguration {
       setPersistenceProviderClass(HibernatePersistenceProvider.class);
       setPersistenceUnitName("cust2");
       setPackagesToScan("io.fdlessard.codebites.batch.modified");
-      setJpaProperties(Utils.getPostgresHibernateProperties());
+      setJpaProperties(Utils.getMariaDbHibernateProperties());
     }};
 
   }
 
-  @Bean
+  @Bean(name = "modifiedCustomerTransactionManager")
   public PlatformTransactionManager modifiedCustomerTransactionManager(
       @Qualifier("modifiedCustomerEntityManagerFactory") EntityManagerFactory modifiedCustomerEntityManagerFactory
   ) {

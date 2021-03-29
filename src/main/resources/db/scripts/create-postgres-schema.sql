@@ -1,5 +1,0 @@
-DROP SCHEMA IF EXISTS cust1 cascade;;
-DROP SCHEMA IF EXISTS cust2 cascade;;
-CREATE SCHEMA cust1;;
-CREATE SCHEMA cust2;;
-

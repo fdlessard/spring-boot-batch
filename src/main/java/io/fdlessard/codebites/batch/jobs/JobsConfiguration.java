@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.data.transaction.ChainedTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
@@ -41,17 +42,15 @@ public class JobsConfiguration {
   @Autowired
   private ItemProcessor<Customer, ModifiedCustomer> customerItemProcessor;
 
-  @Autowired
-  private PlatformTransactionManager batchTransactionManager;
-
   @Bean
   public Job customerJob(
       JdbcCursorItemReader<Customer> customerItemReader,
-      JpaItemWriter<ModifiedCustomer> modifiedCustomerItemWriter
+      JpaItemWriter<ModifiedCustomer> modifiedCustomerItemWriter,
+      @Qualifier("chainedTransactionManager") PlatformTransactionManager chainedTransactionManager
   ) {
 
     Step step1 = stepBuilderFactory.get("step-1")
-        .transactionManager(batchTransactionManager)
+        .transactionManager(chainedTransactionManager)
         .<Customer, ModifiedCustomer>chunk(10)
         .reader(customerItemReader)
         .processor(customerItemProcessor)
@@ -117,6 +116,19 @@ public class JobsConfiguration {
     modifiedCustomerItemWriter.setEntityManagerFactory(modifiedCustomerEntityManagerFactory);
 
     return modifiedCustomerItemWriter;
+  }
+
+  @Bean(name = "chainedTransactionManager")
+  PlatformTransactionManager chainTransactionManager(
+          @Qualifier("customerTransactionManager") PlatformTransactionManager customerTransactionManager,
+          @Qualifier("modifiedCustomerTransactionManager") PlatformTransactionManager modifiedCustomerTransactionManager
+  ) {
+    ChainedTransactionManager chainedTransactionManager =
+            new ChainedTransactionManager(
+                    customerTransactionManager, modifiedCustomerTransactionManager
+            );
+
+    return chainedTransactionManager;
   }
 
 }
