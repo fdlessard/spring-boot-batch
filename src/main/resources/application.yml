@@ -31,63 +31,36 @@ spring:
     time-zone: UTC
     serialization:
       write_dates_as_timestamps: false
+  h2:
+    console:
+      enabled: false
   batch:
     job:
       enabled: false
     initialize-schema: always
 
-
-#  datasource:
-#    username: ${POSTGRES_USER:postgres}
-#    password: ${POSTGRES_PASSWORD:secret}
-#    platform: postgres
-#    driverClassName: org.postgresql.Driver
-#    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:postgres}
-#    initialization-mode: always
-#    separator: ";;"
-#    schema: classpath:/db/scripts/create-postgres-schema.sql
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL10Dialect
-        show_sql: true
-        format_sql: true
-        hbm2ddl:
-          create_namespaces: true
-          auto: update
-#    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-#    hibernate:
-#      ddl-auto: create
-#      use-new-id-generator-mappings: false
-#      jdbc:
-#        time_zone: UTC
-#    show-sql: true
-#  liquibase:
-#    enabled: on
-#    drop-first: on
-#    default-schema: public
-#    change-log: classpath:/db/changelog/db.changelog-master.yaml
+batch:
+  datasource:
+    jdbcUrl: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
 
 cust1:
   datasource:
     jdbcUrl: jdbc:postgresql://localhost:5432/postgres
     driverClassName: org.postgresql.Driver
-    username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:secret}
+    username: postgres
+    password: secret
 
 cust2:
   datasource:
     jdbcUrl: jdbc:postgresql://localhost:5432/postgres
     driverClassName: org.postgresql.Driver
-    username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:secret}
+    username: postgres
+    password: secret
 
-batch:
-  datasource:
-    jdbcUrl: jdbc:postgresql://localhost:5432/postgres
-    driverClassName: org.postgresql.Driver
-    username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:secret}
+
 
 
 

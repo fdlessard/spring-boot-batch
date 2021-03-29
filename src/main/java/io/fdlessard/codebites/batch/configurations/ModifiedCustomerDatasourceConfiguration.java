@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -21,9 +22,9 @@ import org.springframework.transaction.PlatformTransactionManager;
     transactionManagerRef = "modifiedCustomerTransactionManager",
     basePackages = {"io.fdlessard.codebites.batch.modified"}
 )
-public class ModifiedCustomerDatasourceConfiguration extends HikariConfig {
+public class ModifiedCustomerDatasourceConfiguration {
 
-  @Bean
+  @Bean(name = "modifiedCustomerDataSource")
   @ConfigurationProperties(prefix = "cust2.datasource")
   public DataSource modifiedCustomerDataSource() {
 
@@ -32,9 +33,9 @@ public class ModifiedCustomerDatasourceConfiguration extends HikariConfig {
         .build();
   }
 
-  @Bean
+  @Bean(name = "modifiedCustomerEntityManagerFactory")
   public LocalContainerEntityManagerFactoryBean modifiedCustomerEntityManagerFactory(
-      DataSource modifiedCustomerDataSource
+      @Qualifier("modifiedCustomerDataSource") DataSource modifiedCustomerDataSource
   ) {
 
     return new LocalContainerEntityManagerFactoryBean() {{
@@ -42,14 +43,14 @@ public class ModifiedCustomerDatasourceConfiguration extends HikariConfig {
       setPersistenceProviderClass(HibernatePersistenceProvider.class);
       setPersistenceUnitName("cust2");
       setPackagesToScan("io.fdlessard.codebites.batch.modified");
-      setJpaProperties(Utils.getHibernateProperties());
+      setJpaProperties(Utils.getPostgresHibernateProperties());
     }};
 
   }
 
   @Bean
   public PlatformTransactionManager modifiedCustomerTransactionManager(
-      EntityManagerFactory modifiedCustomerEntityManagerFactory
+      @Qualifier("modifiedCustomerEntityManagerFactory") EntityManagerFactory modifiedCustomerEntityManagerFactory
   ) {
     return new JpaTransactionManager(modifiedCustomerEntityManagerFactory);
   }

@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 )
 public class CustomerDatasourceConfiguration {
 
-  @Bean
+  @Bean(name = "customerDataSource")
   @ConfigurationProperties(prefix = "cust1.datasource")
   public DataSource customerDataSource() {
 
@@ -31,23 +32,24 @@ public class CustomerDatasourceConfiguration {
         .build();
   }
 
-  @Bean
+  @Bean(name = "customerEntityManagerFactory")
   public LocalContainerEntityManagerFactoryBean customerEntityManagerFactory(
-      DataSource customerDataSource) {
+      @Qualifier("customerDataSource") DataSource customerDataSource
+  ) {
 
     return new LocalContainerEntityManagerFactoryBean() {{
       setDataSource(customerDataSource);
       setPersistenceProviderClass(HibernatePersistenceProvider.class);
       setPersistenceUnitName("cust1");
       setPackagesToScan("io.fdlessard.codebites.batch.customer");
-      setJpaProperties(Utils.getHibernateProperties());
+      setJpaProperties(Utils.getPostgresHibernateProperties());
 
     }};
   }
 
   @Bean
   public PlatformTransactionManager customerTransactionManager(
-      EntityManagerFactory customerEntityManagerFactory
+      @Qualifier("customerEntityManagerFactory") EntityManagerFactory customerEntityManagerFactory
   ) {
     return new JpaTransactionManager(customerEntityManagerFactory);
   }

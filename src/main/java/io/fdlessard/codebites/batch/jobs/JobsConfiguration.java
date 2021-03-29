@@ -7,6 +7,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.DefaultBatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -20,6 +21,7 @@ import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +30,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @EnableBatchProcessing
-public class JobsSetup {
+public class JobsConfiguration {
 
   @Autowired
   private JobBuilderFactory jobBuilderFactory;
@@ -40,7 +42,7 @@ public class JobsSetup {
   private ItemProcessor<Customer, ModifiedCustomer> customerItemProcessor;
 
   @Autowired
-  private PlatformTransactionManager modifiedCustomerTransactionManager;
+  private PlatformTransactionManager batchTransactionManager;
 
   @Bean
   public Job customerJob(
@@ -49,7 +51,7 @@ public class JobsSetup {
   ) {
 
     Step step1 = stepBuilderFactory.get("step-1")
-        .transactionManager(modifiedCustomerTransactionManager)
+        .transactionManager(batchTransactionManager)
         .<Customer, ModifiedCustomer>chunk(10)
         .reader(customerItemReader)
         .processor(customerItemProcessor)
@@ -61,6 +63,7 @@ public class JobsSetup {
         .build();
   }
 
+/*
   @Bean
   public FlatFileItemReader<Customer> flatFileItemReader(
       @Value("${inputFile}") Resource inputFile) {
@@ -89,10 +92,12 @@ public class JobsSetup {
     customerLineMapper.setFieldSetMapper(fieldSetMapper);
 
     return customerLineMapper;
-  }
+  }*/
 
   @Bean
-  public JdbcCursorItemReader<Customer> customerItemReader(DataSource customerDataSource) {
+  public JdbcCursorItemReader<Customer> customerItemReader(
+      @Qualifier("customerDataSource") DataSource customerDataSource
+  ) {
 
     return new JdbcCursorItemReaderBuilder<Customer>()
         .dataSource(customerDataSource)
@@ -100,11 +105,12 @@ public class JobsSetup {
         .sql("select * from cust1.customer")
         .rowMapper(new CustomerRowMapper())
         .build();
+
   }
 
   @Bean
   public JpaItemWriter<ModifiedCustomer> modifiedCustomerItemWriter(
-      EntityManagerFactory modifiedCustomerEntityManagerFactory
+      @Qualifier("modifiedCustomerEntityManagerFactory") EntityManagerFactory modifiedCustomerEntityManagerFactory
   ) {
 
     JpaItemWriter<ModifiedCustomer> modifiedCustomerItemWriter = new JpaItemWriter<>();
